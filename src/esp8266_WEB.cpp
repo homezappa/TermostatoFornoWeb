@@ -16,8 +16,8 @@ void loop();
 
 
 // Replace with your network credentials
-const char* ssid = "TERRA";
-const char* password = "1234567890";
+const char* ssid = "XXXXXXX";
+const char* password = "YYYYYYY";
 /* Local SSID */
 const char* ssid_soft_ap     = "TERMOSTATO";
 const char* password_soft_ap = NULL;          // setting NULL for no password
