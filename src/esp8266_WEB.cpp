@@ -18,7 +18,7 @@ void loop();
 // Replace with your network credentials
 const char* ssid = "TERRA";
 const char* password = "1234567890";
-
+/* Local SSID */
 const char* ssid_soft_ap     = "TERMOSTATO";
 const char* password_soft_ap = NULL;          // setting NULL for no password
 int Wifi_SoftAP_Channel      = 5;
@@ -46,6 +46,7 @@ float tolerance = 0.05;
 float incr = 0.5;
 float offset = 0.50;
 boolean st = false;
+boolean wificonnected = false;
 uint addr = 0; // for the EEPROM
 
   struct { 
@@ -62,7 +63,7 @@ unsigned long previousMillis = 0;    // will store last time DHT was updated
 // Updates DHT readings every 10 seconds
 const long interval = 5000;  
 
-#include "html.h"
+#include "webserver.html"
 
 // Replaces placeholder with DHT values
 String processor(const String& var){
@@ -76,12 +77,26 @@ String processor(const String& var){
   else if(var == "TEMPDESIRED"){
     return String(tempdes);
   }
+  else if(var == "STATUS"){
+    if(st==false) {
+      return String("SPENTO");
+    } else {
+      return String("ACCESO");
+    }
+  }
+  else if (var == "WIFI") {
+    if (wificonnected == true) {
+      return WiFi.localIP().toString();
+    } else {
+      return String("Not Connected!");
+    }
+  }
   return String();
 }
 
 void setup(){
   int maxretry = 60;  // try to connect to wifi for 1 minute
-  float tempread;
+  
 
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(WIFIPIN, OUTPUT);
@@ -129,6 +144,7 @@ void setup(){
   if (maxretry > 0) {
     digitalWrite(WIFIPIN, LOW); // turn on WifiPIN
     Serial.println(WiFi.localIP());
+    wificonnected = true;
   }
   // Print ESP8266 Local IP Address
 

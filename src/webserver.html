@@ -1,0 +1,161 @@
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML><html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <style>
+    html {
+     font-family: Arial;
+     display: inline-block;
+     margin: 0px auto;
+     text-align: center;
+    }
+    h2 { font-size: 2.0rem; }
+    p { font-size: 2.0rem; }
+    .units { font-size: 1rem; }
+    .dht-labels{
+      font-size: 1.2rem;
+      vertical-align:middle;
+      padding-bottom: 5px;
+    }
+    #savebtn, #btnTempUp, #btnTempDn { font-size: 2.0rem; }
+    #saveobj { font-size: 1.5rem; }
+    #temperature, #humidity { font-size: 2.0rem; }
+    #stRelais, #stWifi {font-size: 1.5rem; }
+    #tempDesired { font-size: 2.0rem; }
+    .myButton {
+      box-shadow: 0px 1px 0px 0px #f0f7fa;
+      background:linear-gradient(to bottom, #33bdef 5%, #019ad2 100%);
+      background-color:#33bdef;
+      border-radius:6px;
+      border:1px solid #057fd0;
+      display:inline-block;
+      cursor:pointer;
+      color:#ffffff;
+      font-family:Arial;
+      font-size:15px;
+      font-weight:bold;
+      padding:6px 24px;
+      text-decoration:none;
+      text-shadow:0px -1px 0px #5b6178;
+    }
+    .myButton:hover {
+      background:linear-gradient(to bottom, #019ad2 5%, #33bdef 100%);
+      background-color:#019ad2;
+    }
+    .myButton:active {
+      position:relative;
+      top:1px;
+    }
+  </style>
+  <script>
+    function TempUp(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("tempDesired").innerHTML = this.responseText;
+        ShowButton();
+      }
+    };
+    xhttp.open("GET", "/tempup", true);
+    xhttp.send();
+    return false;
+  }
+  function TempDn(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("tempDesired").innerHTML = this.responseText;
+        ShowButton();
+      }
+    };
+    xhttp.open("GET", "/tempdn", true);
+    xhttp.send();
+    return false;
+  }
+  function SaveTemp(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("saveobj").innerHTML = this.responseText;
+        ShowResult();
+      }
+    };
+    xhttp.open("GET", "/save", true);
+    xhttp.send();
+    return false;
+  }
+  function ShowButton() {
+        document.getElementById("saveobj").style.visibility = "hidden";
+        document.getElementById("savebtn").style.visibility = "visible";
+  }
+  function ShowResult() {
+        document.getElementById("saveobj").style.visibility = "visible";
+        document.getElementById("savebtn").style.visibility = "hidden";
+  }
+  </script>
+</head>
+<body>
+  <h2>Termostato Forno</h2>
+  <p>
+    <span class="dht-labels">WiFi:</span> 
+    <span id="stWifi">%WIFI%</span>
+  </p>
+  <p>
+    <img src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAoCAIAAABmcd1FAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALzSURBVEhLY/z//z8DbQATlKYBGDUaDRAXjd9ubz15uuPpi5O//zIwMItyCkTJmuSb6smwQeWxAsJG/7y9M+jkpd2/oVw44OZV2+zgbyMC5WICQgHy5nA6NnOB4OvnW577tl2F8rAAAkYfOnNuGcRcZsEaw5CX0aW/wsO3K4iIgsV+fr1ef+I9mIkF4Df61LpXv8AM1jTduDoDRUFg4HLJOTtGb5fjBYv/2/TiPC6z8Rr9/P01YLQBAbN0kCFylLHpKcjoQZg/vz2DMDAAXqO//X4HYbBzikMYpABC0UgBGDUaDQwKo3/dPrZMbVE376K5E25DEjsBQLTRv0623n764C/Dz7/vys7vuQkVxQeINvrxxyv/oEyG///+QFn4wHCPRpIBXqP//Sccpv//Q0owTIDH6FdLr966BmVjAGYmVgjj+630/dd/QtioAKfR70/vKXoPSRNsUUpmCl9/QEtBIPjz5TGPy0wFfnYQ59/ZR8cXPgaLowJcRr/f9vQppIxXkrbvZD1kfv7+EzAXBH499tux5oGuWy8fWPu/t7PuYEnouIy+fvAjhCGYp8k889r9W/BEDQG/n6aeehEtJwl2OMOldw8w3Y3D6OefH0DMYubX4Ht9HltYvv/85oEQnzqE8+f3JwgDCeAMa8oBDqMleRUgMn8/3vgkbcUFZqMCQV4RhXefoGHMwsoHYSABXK7WdOaHSL2fdP17lrqiFJpCVunZZhJLHz2HBJWekIIsmIEMcBktGCAvKwhm3Xt6MPun5XkLw0geNm4gn4lVRVBzt4unzMVdxZ/AEcIknKYCDXNkgKdh9mrdpmURb6ENHB1xvam6xkayguwMX1/fvDD92rnuDz/ATmYyVvA64KgJSSrIAG+b78252n37O7+ipTsUICpicc7XFmtTglBz8tuVaTv3l0MdiAaYLWUdVrkY4WqiENMI/vXk+qG5N+/P//Tp2V+gD5j42biMhFUbdC0tpUGBjwsQYzSZAFcKoQKgmdEMDABchxMnAF8LFgAAAABJRU5ErkJggg==" /> 
+    <span class="dht-labels">T&deg; misurata:</span> 
+    <span id="temperature">%TEMPERATURE%</span>
+    <sup class="units">&deg;C</sup>
+  </p>
+  <p>
+    <span class="dht-labels">Stato:</span> 
+    <span id="stRelais">%STATUS%</span>
+  </p>
+  <p>
+    <img src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAoCAIAAABmcd1FAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALzSURBVEhLY/z//z8DbQATlKYBGDUaDRAXjd9ubz15uuPpi5O//zIwMItyCkTJmuSb6smwQeWxAsJG/7y9M+jkpd2/oVw44OZV2+zgbyMC5WICQgHy5nA6NnOB4OvnW577tl2F8rAAAkYfOnNuGcRcZsEaw5CX0aW/wsO3K4iIgsV+fr1ef+I9mIkF4Df61LpXv8AM1jTduDoDRUFg4HLJOTtGb5fjBYv/2/TiPC6z8Rr9/P01YLQBAbN0kCFylLHpKcjoQZg/vz2DMDAAXqO//X4HYbBzikMYpABC0UgBGDUaDQwKo3/dPrZMbVE376K5E25DEjsBQLTRv0623n764C/Dz7/vys7vuQkVxQeINvrxxyv/oEyG///+QFn4wHCPRpIBXqP//Sccpv//Q0owTIDH6FdLr966BmVjAGYmVgjj+630/dd/QtioAKfR70/vKXoPSRNsUUpmCl9/QEtBIPjz5TGPy0wFfnYQ59/ZR8cXPgaLowJcRr/f9vQppIxXkrbvZD1kfv7+EzAXBH499tux5oGuWy8fWPu/t7PuYEnouIy+fvAjhCGYp8k889r9W/BEDQG/n6aeehEtJwl2OMOldw8w3Y3D6OefH0DMYubX4Ht9HltYvv/85oEQnzqE8+f3JwgDCeAMa8oBDqMleRUgMn8/3vgkbcUFZqMCQV4RhXefoGHMwsoHYSABXK7WdOaHSL2fdP17lrqiFJpCVunZZhJLHz2HBJWekIIsmIEMcBktGCAvKwhm3Xt6MPun5XkLw0geNm4gn4lVRVBzt4unzMVdxZ/AEcIknKYCDXNkgKdh9mrdpmURb6ENHB1xvam6xkayguwMX1/fvDD92rnuDz/ATmYyVvA64KgJSSrIAG+b78252n37O7+ipTsUICpicc7XFmtTglBz8tuVaTv3l0MdiAaYLWUdVrkY4WqiENMI/vXk+qG5N+/P//Tp2V+gD5j42biMhFUbdC0tpUGBjwsQYzSZAFcKoQKgmdEMDABchxMnAF8LFgAAAABJRU5ErkJggg==" /> 
+    <span class="dht-labels">T&deg; desiderata:</span> 
+    <span id="tempDesired">%TEMPDESIRED%</span>
+    <sup class="units">&deg;C</sup>
+  </p>
+  <p>
+  <button class="myButton" id="btnTempUp" onclick="return TempDn();" value="-">&nbsp;&or;&nbsp;</button>
+  <button class="myButton" id="btnTempDn" onclick="return TempUp();" value="+">&nbsp;&and;&nbsp;</button>
+  <br />
+  <button class="myButton" id="savebtn" style="visibility:hidden" onclick="return SaveTemp();" value="Salva">&nbsp;Salva&nbsp;</button><br />
+  <span id="saveobj" style="visibility:hidden">-----</span>
+  </p>
+  <p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAoCAIAAABmcd1FAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALxSURBVEhL7ZdPTNNQHMe7ldFtuAxUZEFIJESFKCMkEoOixrMH40Eh0ehJkx08eNSLXjx48KByQI1GxZtBgQMXEwghGCSQyQwgZhvC3Nq5P2XdnO3abnbjJ2vL+scl3Pgctu/vZfn07b3X91pDLpdDtgcjfG8DO2oZetXhhRXn0JJhaNk1n4YmLXSq469X6a9ZBMlm+4ORBWjUQJ/aRz2jISI0/c4HUR1d6jmCEdmyb4koRFV0qFniRVQYiyK+KPWRhayCtjrsSb3kIQM80+fRnkwtNRt5jLMMFEVG8F/TWh3XUPvd6w8zkCVk/txxU5AVUFVToXs4t7XLG4zjkUEScklU1PyYmxqQjbIYPuP6gqvIFdXM4lpvTGO/jZCJu4uKF1dQk6HrXjoChQq5J94fwwo9L6lODwtDwUGhAZfpmQn4oZBQQu2fCfas/8fRw/xO9UzHoRCxRU3+vBVUXBVKzOKxpzjkTWRqfsyTGinjsMxxt5cJWYekaoroi5d5CpNk8pW04xJ14Fv6Q9nne44bWJPcn2I1PZHQuSxKM0VR4nUoVieXNvf78qC5ZUh5xGo2UNzM0Psdh+gOazuU+mD5MKQ80mksgh5pQrEmkxPKchCrTY0mSMIq9AeET9vJqo1SHya0DlIesdrWaoYkqAdDwnTbLtVjtdCiA3PFYUh5xGrzGXsFRGG6w7ExFqlpc7zfh2LQpsFZu70GYh7JWDe2WC8YICMc3TsZCiPW7u5mb2vVFYtBY2wMphstNsgFZA/BvOeTr50obsH77bbx0w0H/80Bs7J63J2eh0pCu6Pu84nd4v8nWyGos3PvAwsUAsFEsm30u2uGcEdolT0Ls1jfdEq8AqUe3cnQ1cmE3v1aoKJy6FTzefEwF5D1ukBN/fOu6pv65g7DzKNdB7Z6BZRfONjUxCxxmWCDShuWwXjOUd1/rK6heDdI0HiXYZLxqSXqUYyZy2SDhdnFUKOjEr22Z9fF1tqjNrTwq9LsvCZJQJC/HEweiSCXIscAAAAASUVORK5CYII=" />
+    <span class="dht-labels">Umidit&agrave;</span>
+    <span id="humidity">%HUMIDITY%</span>
+    <sup class="units">%</sup>
+  </p>
+  
+</body>
+<script>
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var arTemp = this.responseText.split(";");
+      document.getElementById("temperature").innerHTML = arTemp[0];
+      if(arTemp.length >1)
+      document.getElementById("stRelais").innerHTML = arTemp[1];
+    }
+  };
+  xhttp.open("GET", "/temperature", true);
+  xhttp.send();
+}, 10000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("humidity").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/humidity", true);
+  xhttp.send();
+}, 10000 ) ;
+</script>
+</html>)rawliteral";
